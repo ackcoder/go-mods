@@ -4,7 +4,8 @@ import (
 	"strings"
 )
 
-type integerNumber interface {
+// 泛型定义 数值类型限定
+type Number interface {
 	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64
 }
 
@@ -15,12 +16,12 @@ func Must(in error, msg ...string) {
 }
 
 // MustZero 必须为0 否则Panic
-func MustZero[T integerNumber](in T, msg ...string) {
+func MustZero[T Number](in T, msg ...string) {
 	panicIfCondition(in == 0, msg...)
 }
 
 // MustZeroN 必须不为0 否则Panic
-func MustZeroN[T integerNumber](in T, msg ...string) {
+func MustZeroN[T Number](in T, msg ...string) {
 	panicIfCondition(in != 0, msg...)
 }
 
