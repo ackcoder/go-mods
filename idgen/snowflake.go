@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// idGenerator (单机?) 雪花算法 id 生成器
+// idGenerator 雪花算法 id 生成器
 // 原理: https://en.wikipedia.org/wiki/Snowflake_ID
 // 原作者: 小生凡一
 // 参考文章:
@@ -122,6 +122,7 @@ func GenNum() uint64 {
 }
 
 func (s *idGenerator) genId() uint64 {
+	// TODO: 锁粒度较大
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
