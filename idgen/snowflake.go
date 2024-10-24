@@ -54,20 +54,20 @@ const (
 type idGenerator struct {
 	mu *sync.Mutex
 
-	timestamp    int64 //毫秒级时间戳 2^41 约 69 年
-	dataCenterId int64 //机器码 集群ID 2^5
-	workerId     int64 //机器码 程序ID 2^5, 共 2^10=1024 台
-	sequence     int64 //序列号 2^12=4096
+	timestamp    int64  //毫秒级时间戳 2^41 约 69 年
+	dataCenterId uint64 //机器码 集群ID 2^5
+	workerId     uint64 //机器码 程序ID 2^5, 共 2^10=1024 台
+	sequence     uint64 //序列号 2^12=4096
 }
 
 // Init 单例初始化
 //   - {dataCenterId} 集群ID [0, 31]
 //   - {workerId} 程序ID [0, 31]
-func Init(dataCenterId, workerId int64) {
-	if dataCenterId < 0 || dataCenterId > dataCenterIdMaxValue {
+func Init(dataCenterId, workerId uint64) {
+	if dataCenterId > dataCenterIdMaxValue {
 		panic(fmt.Sprintf("雪花算法 id 生成器 dataCenterId 范围应为 [0, %d]", dataCenterIdMaxValue))
 	}
-	if workerId < 0 || workerId > workerIdMaxValue {
+	if workerId > workerIdMaxValue {
 		panic(fmt.Sprintf("雪花算法 id 生成器 workId 范围应为 [0, %d]", workerIdMaxValue))
 	}
 	once.Do(func() {
@@ -107,21 +107,21 @@ func GenB36() (string, string) {
 		panic("雪花算法 id 生成器未初始化")
 	}
 	id := instance.genId()
-	return strconv.FormatInt(id, 36), fmt.Sprintf("%d", id)
+	return strconv.FormatUint(id, 36), fmt.Sprintf("%d", id)
 }
 
-// GenI64 生成雪花算法ID (10进制位)
+// GenNum 生成雪花算法ID (10进制位数值)
 //
-//	注: snowflake设计用到63位二进制位、程序中int64足够表示
-//	    但需要留意传给数据库、传给前端是否能正确表示
-func GenI64() int64 {
+//	注: snowflake设计用到63位二进制位、需要数值必须uint64类型表示
+//	    但需注意存数据库/传前端能否正确表示、业务逻辑中也尽量不转非uint64类型
+func GenNum() uint64 {
 	if instance == nil {
 		panic("雪花算法 id 生成器未初始化")
 	}
 	return instance.genId()
 }
 
-func (s *idGenerator) genId() int64 {
+func (s *idGenerator) genId() uint64 {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -159,7 +159,7 @@ func (s *idGenerator) genId() int64 {
 		s.sequence = defaultInitValue
 	}
 
-	diff := now - epoch
+	diff := uint64(now - epoch)
 	if diff > timestampMaxValue {
 		// 运行超 69 年期限、直接抛异常
 		panic(fmt.Sprintf("雪花算法 起始时间 epoch 范围应为 [0, %d]", timestampMaxValue-1))
