@@ -7,8 +7,3 @@
    - 可引用 [Goframe](https://github.com/gogf/gf) 框架内模块化包
    - 或者 [lo](https://github.com/samber/lo) 泛型支持工具包
 3. 最后是使用三方库
-
-### TODO
-
-- [ ] Http请求发送封装包
-- [ ] gf框架下error处理封装包

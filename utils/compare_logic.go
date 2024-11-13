@@ -1,8 +1,6 @@
 package utils
 
-import (
-	"strings"
-)
+import "strings"
 
 // 泛型定义 数值类型限定
 type Number interface {
@@ -11,8 +9,10 @@ type Number interface {
 
 // Must 必须无错误 否则Panic
 func Must(in error, msg ...string) {
-	msg = append(msg, in.Error())
-	panicIfCondition(in != nil, msg...)
+	if in != nil {
+		msg = append(msg, in.Error())
+	}
+	panicIfCondition(in == nil, msg...)
 }
 
 // MustZero 必须为0 否则Panic
@@ -37,7 +37,7 @@ func MustFalse(in bool, msg ...string) {
 
 // Mustxxx 公共逻辑
 func panicIfCondition(condition bool, msg ...string) {
-	if !condition {
+	if condition {
 		return
 	}
 	if len(msg) != 0 {
