@@ -23,6 +23,12 @@ func TestNetworkInfoList(t *testing.T) {
 	}
 }
 
+func TestGenerateStr(t *testing.T) {
+	t.Log(utils.RandStr(10))
+	t.Log(utils.RandNumStr(8))
+	t.Log(utils.Md5Str16("hello world!"))
+}
+
 func TestMustxxx(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil && r == "custom error" {
