@@ -14,46 +14,78 @@ import (
 	qrcodePkg "github.com/skip2/go-qrcode"
 )
 
-// 设置基础二维码图像
-func (qr *QrcodeInfo) SetBaseImage() error {
+// SaveToFile 二维码存为文件
+//   - {imgPath} 保存文件路径
+func (qr *Qrcode) SaveToFile(imgPath string) (err error) {
+	if imgPath == "" {
+		return errors.New("未配置二维码保存路径")
+	}
+	if err = qr.drawImage(); err != nil {
+		return
+	}
+
+	file, err := os.Create(imgPath)
+	if err != nil {
+		return
+	}
+	return png.Encode(file, qr.color)
+}
+
+// SaveAsBase64Str 二维码转为base64字串
+func (qr *Qrcode) SaveAsBase64Str() (str string, err error) {
+	if err = qr.drawImage(); err != nil {
+		return
+	}
+
+	buff := bytes.NewBuffer(nil)
+	if err = png.Encode(buff, qr.color); err != nil {
+		return
+	}
+	str = base64.StdEncoding.EncodeToString(buff.Bytes())
+	return
+}
+
+// SaveAsBase64Img 二维码转为base64图片字串
+func (qr *Qrcode) SaveAsBase64Img() (str string, err error) {
+	str, err = qr.SaveAsBase64Str()
+	str = "data:image/png;base64," + str
+	return
+}
+
+// 绘制二维码图像
+func (qr *Qrcode) drawImage() error {
 	var err error
 	var qrPkg *qrcodePkg.QRCode
-	qrPkg, err = qrcodePkg.New(qr.Detail.content, qrcodePkg.Highest)
+	qrPkg, err = qrcodePkg.New(qr.imgContent, qrcodePkg.Highest)
 	if err != nil {
 		return err
 	}
-	qrPkg.DisableBorder = true
-	qr.bgImg = qrPkg.Image(qr.Detail.imgSize) //生成基底二维码
+	qrPkg.DisableBorder = true              // 去除二维码边框
+	qr.bgImg = qrPkg.Image(int(qr.imgSize)) //生成基底二维码
 
 	// 保存二维码数据
 	b := qr.bgImg.Bounds()
 	m := image.NewRGBA(b)
 	draw.Draw(m, b, qr.bgImg, image.Point{X: 0, Y: 0}, draw.Src)
 	qr.color = m
-	return nil
-}
 
-// 设置中心图到二维码图像上
-func (qr *QrcodeInfo) SetCenterImage() (err error) {
-	if qr.Detail.centerImg == "" {
-		return errors.New("未配置中心图文件路径")
+	// 判断是否需要绘制中心图
+	if qr.centerImg == "" {
+		return nil
 	}
-	if qr.Detail.centerImgSize[0] == 0 || qr.Detail.centerImgSize[1] == 0 {
-		return errors.New("未配置中心图大小")
-	}
-	if qr.Detail.centerImgSize[0] > qr.Detail.imgSize || qr.Detail.centerImgSize[1] > qr.Detail.imgSize {
+	if qr.centerImgSize[0] > qr.imgSize || qr.centerImgSize[1] > qr.imgSize {
 		return errors.New("中心图大小不能超过基底二维码大小")
 	}
 
 	// 尝试获取中心图数据
 	var fileHandle io.Reader
-	if _, tmpE := os.Stat(qr.Detail.centerImg); tmpE == nil {
-		fileHandle, err = os.Open(qr.Detail.centerImg)
+	if _, tmpE := os.Stat(qr.centerImg); tmpE == nil {
+		fileHandle, err = os.Open(qr.centerImg)
 		if err != nil {
 			return err
 		}
 	} else {
-		b64, err := base64.StdEncoding.DecodeString(qr.Detail.centerImg)
+		b64, err := base64.StdEncoding.DecodeString(qr.centerImg)
 		if err != nil {
 			return errors.New("获取中心图数据失败、配置项 centerImg 非文件路径或Base64字串")
 		}
@@ -66,54 +98,18 @@ func (qr *QrcodeInfo) SetCenterImage() (err error) {
 		return err
 	}
 	imgHandle = resize.Resize(
-		uint(qr.Detail.centerImgSize[0]),
-		uint(qr.Detail.centerImgSize[1]),
+		qr.centerImgSize[0],
+		qr.centerImgSize[1],
 		imgHandle,
 		resize.Lanczos3,
 	)
 
 	// 绘制基底二维码及其上的中心图、保存二维码数据
-	b := qr.bgImg.Bounds()
 	rect := imgHandle.Bounds().Add(image.Pt(
 		(b.Max.X-imgHandle.Bounds().Max.X)/2,
 		(b.Max.Y-imgHandle.Bounds().Max.Y)/2,
 	))
-	m := image.NewRGBA(b)
-	draw.Draw(m, b, qr.bgImg, image.Point{X: 0, Y: 0}, draw.Src)
 	draw.Draw(m, rect, imgHandle, image.Point{X: 0, Y: 0}, draw.Over)
 	qr.color = m
 	return nil
-}
-
-// 二维码存为文件
-func (qr *QrcodeInfo) SaveToFile() (err error) {
-	if qr.Detail.imgPath == "" {
-		return errors.New("未配置二维码保存路径")
-	}
-	if qr.color == nil {
-		return errors.New("未获取到二维码图像数据、请检查 Set* 相关方法是否正确执行")
-	}
-
-	file, err := os.Create(qr.Detail.imgPath)
-	if err != nil {
-		return
-	}
-	return png.Encode(file, qr.color)
-}
-
-// 二维码转为base64字串
-//
-//	注: 前端按需补充 "data:image/png;base64," 前缀以显示图片
-func (qr *QrcodeInfo) SaveAsBase64Str() (str string, err error) {
-	if qr.color == nil {
-		err = errors.New("未获取到二维码图像数据、请检查 Set* 相关方法是否正确执行")
-		return
-	}
-
-	buff := bytes.NewBuffer(nil)
-	// 图像写入buff
-	png.Encode(buff, qr.color)
-	// buff转base64字串
-	str = base64.StdEncoding.EncodeToString(buff.Bytes())
-	return
 }
