@@ -11,12 +11,6 @@ require (
 )
 
 require (
-	go.opentelemetry.io/otel v1.24.0 // indirect
-	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-)
-
-require (
-	github.com/gogf/gf/v2 v2.8.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	golang.org/x/image v0.13.0 // indirect
 )

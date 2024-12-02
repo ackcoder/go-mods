@@ -8,10 +8,10 @@
    - 或者 [lo](https://github.com/samber/lo) 泛型支持工具包
 3. 最后是使用三方库
 
-### TODO
+## preview
 
-后续需整理下组件类型
-有些组件需要实例存在的，比如captcha、qrcode等（类似作为goframe中的service层）
-有些组件类似于工具函数、不需要实例存在的，比如utils
-
-http-req组件目前没太好想法、目前既有工具函数、也有实例方法
+- **qrcode** 二维码组件
+- **captcha** 验证码组件
+- **idgen** ID 生成器
+- **httpreq** http 请求组件
+- **utils** 工具包/公共函数/便捷方法
