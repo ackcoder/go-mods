@@ -13,8 +13,8 @@ func TestIdGenerator_New(t *testing.T) {
 			t.Error(r)
 		}
 	}()
-	// idgen.New(1, 32) //wrong
-	idgen.New(1, 1, time.Now().Add(1*time.Hour)) //no wrong
+	// idgen.New(1, 32) //报错
+	idgen.New(1, 1, time.Now().Add(1*time.Hour)) //正常执行
 }
 
 func TestIdGenerator(t *testing.T) {

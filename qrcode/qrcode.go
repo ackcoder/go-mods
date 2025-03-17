@@ -14,7 +14,54 @@ import (
 	qrcodePkg "github.com/skip2/go-qrcode"
 )
 
-// SaveToFile 二维码存为文件
+type QrcodeOption func(qr *Qrcode)
+
+// 配置二维码大小
+//   - {size} 尺寸,单位/像素. 默认50px
+func WithSize(size uint) QrcodeOption {
+	return func(qr *Qrcode) {
+		if size != 0 {
+			qr.imgSize = size
+		}
+	}
+}
+
+// 配置中心图
+//   - {pathOrB64str} 中心图路径或Base64字串
+//   - {w},{h} 中心图宽高,单位/像素
+func WithCenterImg(pathOrB64str string, w, h uint) QrcodeOption {
+	return func(qr *Qrcode) {
+		qr.centerImg = pathOrB64str
+		if w != 0 && h != 0 {
+			qr.centerImgSize = [2]uint{w, h}
+		}
+	}
+}
+
+type Qrcode struct {
+	imgContent    string  //二维码内容
+	imgSize       uint    //二维码大小,单位/像素px
+	centerImg     string  //中心图文件路径或Base64字串
+	centerImgSize [2]uint //中心图宽高,单位/像素px
+
+	bgImg image.Image //基底二维码图像实例
+	color *image.RGBA //最终带色彩的二维码图像数据
+}
+
+// 创建二维码实例
+//   - {content} 二维码内容
+//   - {options} 可选项, 调用 With* 函数可设置
+func New(content string, options ...QrcodeOption) *Qrcode {
+	qr := new(Qrcode)
+	qr.imgContent = content
+	qr.imgSize = 50
+	for _, fn := range options {
+		fn(qr)
+	}
+	return qr
+}
+
+// SaveToFile 二维码存为图片文件
 //   - {imgPath} 保存文件路径
 func (qr *Qrcode) SaveToFile(imgPath string) (err error) {
 	if imgPath == "" {
@@ -31,8 +78,9 @@ func (qr *Qrcode) SaveToFile(imgPath string) (err error) {
 	return png.Encode(file, qr.color)
 }
 
-// SaveAsBase64Str 二维码转为base64字串
-func (qr *Qrcode) SaveAsBase64Str() (str string, err error) {
+// SaveAsB64Str 二维码转为图片base64字串
+//   - {hasPrefix} 是否携带图片格式前缀
+func (qr *Qrcode) SaveAsB64Str(hasPrefix bool) (str string, err error) {
 	if err = qr.drawImage(); err != nil {
 		return
 	}
@@ -42,13 +90,9 @@ func (qr *Qrcode) SaveAsBase64Str() (str string, err error) {
 		return
 	}
 	str = base64.StdEncoding.EncodeToString(buff.Bytes())
-	return
-}
-
-// SaveAsBase64Img 二维码转为base64图片字串
-func (qr *Qrcode) SaveAsBase64Img() (str string, err error) {
-	str, err = qr.SaveAsBase64Str()
-	str = "data:image/png;base64," + str
+	if hasPrefix {
+		str = "data:image/png;base64," + str
+	}
 	return
 }
 

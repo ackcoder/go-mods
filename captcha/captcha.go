@@ -28,7 +28,7 @@ func New(size, exp int, dirverType ...CaptchaType) *Captcha {
 	if len(dirverType) != 0 {
 		dirverType[0](ins)
 	} else {
-		SetString(120, 40)(ins)
+		WithTypeString(120, 40)(ins)
 	}
 	return ins
 }

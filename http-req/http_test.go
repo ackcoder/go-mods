@@ -1,7 +1,6 @@
 package httpreq_test
 
 import (
-	"crypto/tls"
 	"testing"
 
 	httpreq "github.com/sdjqwbz/go-mods/http-req"
@@ -9,7 +8,8 @@ import (
 
 func TestHttpGet(t *testing.T) {
 	res, err := httpreq.New("https://www.baidu.com").
-		SetTlsVerify(false).
+		SetTimeout(6).
+		SetTlsServerSkipVerify().
 		Get("", nil)
 	if err != nil {
 		t.Error(err)
@@ -19,9 +19,7 @@ func TestHttpGet(t *testing.T) {
 }
 
 func TestHttpQuickGet(t *testing.T) {
-	res, err := httpreq.QuickGet("https://www.baidu.com", nil, &tls.Config{
-		InsecureSkipVerify: false,
-	})
+	res, err := httpreq.QuickGet("https://www.baidu.com", nil)
 	if err != nil {
 		t.Error(err)
 	} else {

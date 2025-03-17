@@ -20,7 +20,7 @@ type ImageOption struct {
 
 // 音频验证码
 //   - {lang} 音频语言,可用值:"en"英语,"ja"日语,"ru"俄语,"zh"中文,默认"en"
-func SetAudio(lang ...string) CaptchaType {
+func WithTypeAudio(lang ...string) CaptchaType {
 	return func(c *Captcha) {
 		var language string
 		if len(lang) != 0 {
@@ -35,7 +35,7 @@ func SetAudio(lang ...string) CaptchaType {
 // 中文验证码
 //   - {w},{h} 宽高
 //   - {opt} 可选项参数
-func SetChinese(w, h int, opt ...*ImageOption) CaptchaType {
+func WithTypeChinese(w, h int, opt ...*ImageOption) CaptchaType {
 	return func(c *Captcha) {
 		noise, line, bg, source, font := takeImageOptionValues(opt...)
 		if source == "" {
@@ -55,7 +55,7 @@ func SetChinese(w, h int, opt ...*ImageOption) CaptchaType {
 
 // 纯数字验证码
 //   - {w},{h} 宽高,最低100x36
-func SetDigit(w, h int) CaptchaType {
+func WithTypeDigit(w, h int) CaptchaType {
 	return func(c *Captcha) {
 		if w < 100 {
 			w = 100
@@ -70,7 +70,7 @@ func SetDigit(w, h int) CaptchaType {
 // 数学计算验证码
 //   - {w},{h} 宽高
 //   - {opt} 可选项参数
-func SetMath(w, h int, opt ...*ImageOption) CaptchaType {
+func WithTypeMath(w, h int, opt ...*ImageOption) CaptchaType {
 	return func(c *Captcha) {
 		noise, line, bg, _, font := takeImageOptionValues(opt...)
 		if font == "" {
@@ -91,7 +91,7 @@ func SetMath(w, h int, opt ...*ImageOption) CaptchaType {
 // 数值字母验证码
 //   - {w},{h} 宽高
 //   - {opt} 可选项参数
-func SetString(w, h int, opt ...*ImageOption) CaptchaType {
+func WithTypeString(w, h int, opt ...*ImageOption) CaptchaType {
 	return func(c *Captcha) {
 		noise, line, bg, source, font := takeImageOptionValues(opt...)
 		if source == "" {
