@@ -1,10 +1,11 @@
 package idgen_test
 
 import (
+	"sync"
 	"testing"
 	"time"
 
-	"github.com/sdjqwbz/go-mods/idgen"
+	"github.com/ackcoder/go-mods/idgen"
 )
 
 func TestIdGenerator_New(t *testing.T) {
@@ -18,11 +19,33 @@ func TestIdGenerator_New(t *testing.T) {
 }
 
 func TestIdGenerator(t *testing.T) {
+	var wg sync.WaitGroup
+	start := make(chan struct{}) //同步启动信号,受限于系统调度与CPU数,不一定全部协程都能同时启动
+
+	var checkS []uint64
+
 	id := idgen.New(1, 1)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 300; i++ {
+		wg.Add(1)
 		go func() {
-			t.Log(id.Gen())
+			defer wg.Done()
+			<-start
+			tmpId := id.GenNum()
+			checkS = append(checkS, tmpId)
+			t.Log(tmpId)
 		}()
+	}
+	time.Sleep(200 * time.Millisecond) //确保所有协程都设置好
+
+	close(start)
+	wg.Wait()
+
+	var checkMap = make(map[uint64]struct{})
+	for _, v := range checkS {
+		if _, ok := checkMap[v]; ok {
+			t.Error("id 重复: ", v)
+		}
+		checkMap[v] = struct{}{}
 	}
 }
 

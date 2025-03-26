@@ -3,7 +3,7 @@ package httpreq_test
 import (
 	"testing"
 
-	httpreq "github.com/sdjqwbz/go-mods/http-req"
+	httpreq "github.com/ackcoder/go-mods/http-req"
 )
 
 func TestHttpGet(t *testing.T) {

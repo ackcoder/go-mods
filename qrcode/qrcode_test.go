@@ -3,7 +3,7 @@ package qrcode_test
 import (
 	"testing"
 
-	"github.com/sdjqwbz/go-mods/qrcode"
+	"github.com/ackcoder/go-mods/qrcode"
 )
 
 // gopher logo base64

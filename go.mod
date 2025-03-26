@@ -1,4 +1,4 @@
-module github.com/sdjqwbz/go-mods
+module github.com/ackcoder/go-mods
 
 go 1.22.0
 

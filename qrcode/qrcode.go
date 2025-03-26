@@ -78,9 +78,9 @@ func (qr *Qrcode) SaveToFile(imgPath string) (err error) {
 	return png.Encode(file, qr.color)
 }
 
-// SaveAsB64Str 二维码转为图片base64字串
-//   - {hasPrefix} 是否携带图片格式前缀
-func (qr *Qrcode) SaveAsB64Str(hasPrefix bool) (str string, err error) {
+// SaveAsB64Str 二维码转为图片 base64 字串
+//   - {withFormatPrefix} 是否携带图片格式前缀
+func (qr *Qrcode) SaveAsB64Str(withFormatPrefix bool) (str string, err error) {
 	if err = qr.drawImage(); err != nil {
 		return
 	}
@@ -90,7 +90,7 @@ func (qr *Qrcode) SaveAsB64Str(hasPrefix bool) (str string, err error) {
 		return
 	}
 	str = base64.StdEncoding.EncodeToString(buff.Bytes())
-	if hasPrefix {
+	if withFormatPrefix {
 		str = "data:image/png;base64," + str
 	}
 	return

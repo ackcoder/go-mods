@@ -3,7 +3,7 @@ package captcha_test
 import (
 	"testing"
 
-	"github.com/sdjqwbz/go-mods/captcha"
+	"github.com/ackcoder/go-mods/captcha"
 )
 
 func TestCaptcha(t *testing.T) {
@@ -22,15 +22,16 @@ func TestCaptcha(t *testing.T) {
 	// 5. 数学计算验证码
 	// ins := captcha.New(4, 60, captcha.WithTypeMath(120, 40))
 
-	tk, b64Str, err := ins.Make()
+	tk, b64Str, err := ins.Make(false)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(tk, b64Str)
+	t.Log(tk)
+	t.Log(b64Str)
 
 	if ins.Check(tk, "wrong_code") {
-		t.Log("验证通过")
+		t.Error("逻辑错误、应校验失败")
 	} else {
-		t.Error("验证失败")
+		t.Log("逻辑正确、错误输入校验不通过")
 	}
 }

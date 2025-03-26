@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"math/rand"
+	"math/rand/v2"
 )
 
 const (
@@ -17,7 +17,7 @@ func RandStr[T Number](n T) string {
 	resBytes := make([]byte, n)
 	size := len(StringLetter)
 	for i := range resBytes {
-		resBytes[i] = StringLetter[rand.Intn(size)]
+		resBytes[i] = StringLetter[rand.IntN(size)]
 	}
 	return string(resBytes)
 }
@@ -27,7 +27,7 @@ func RandNumStr[T Number](n T) string {
 	resBytes := make([]byte, n)
 	size := len(NumberLetter)
 	for i := range resBytes {
-		resBytes[i] = NumberLetter[rand.Intn(size)]
+		resBytes[i] = NumberLetter[rand.IntN(size)]
 	}
 	return string(resBytes)
 }

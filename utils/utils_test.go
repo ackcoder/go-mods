@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/sdjqwbz/go-mods/utils"
+	"github.com/ackcoder/go-mods/utils"
 )
 
 func TestGoVer(t *testing.T) {

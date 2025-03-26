@@ -34,9 +34,12 @@ func New(size, exp int, dirverType ...CaptchaType) *Captcha {
 }
 
 // Make 生成验证码
+//   - {withFormatPrefix} 是否携带图片格式前缀
+//
+// return:
 //   - {idKey} 验证码ID 校验时要用
-//   - {b64Str} 验证码内容 base64 字串
-func (c *Captcha) Make() (idKey, b64Str string, err error) {
+//   - {b64Str} 验证码图片 base64 字串
+func (c *Captcha) Make(withFormatPrefix bool) (idKey, b64Str string, err error) {
 	idKey, question, answer := c.dirver.GenerateIdQuestionAnswer()
 	if err = c.store.Set(idKey, answer); err != nil {
 		return
@@ -46,6 +49,9 @@ func (c *Captcha) Make() (idKey, b64Str string, err error) {
 		return
 	}
 	b64Str = item.EncodeB64string()
+	if !withFormatPrefix {
+		b64Str = strings.TrimPrefix(b64Str, "data:image/png;base64,")
+	}
 	return
 }
 

@@ -4,7 +4,7 @@ import "strings"
 
 // 泛型定义 数值类型限定
 type Number interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
 }
 
 // Must 必须无错误 否则Panic
