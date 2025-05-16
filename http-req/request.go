@@ -163,6 +163,8 @@ func QuickDelete(url string, headers map[string]string, tlsConf ...*tls.Config) 
 
 // 基础 request 封装
 func baseNewRequest(method, url string, headers map[string]string, body string) (req *http.Request, err error) {
+	// TODO:
+	// 添加上下文支持: http.NewRequestWithContext(context.Background(), method, url, nil)
 	switch method {
 	case http.MethodGet:
 		fallthrough

@@ -14,10 +14,13 @@
 - **captcha** 验证码组件
 - **idgen** ID 生成器
 - **httpreq** http 请求组件
+- **holidays** *初步添加* 获取指定年份的国内节假日与调休工作日（会请求 gov.cn 相关接口）
 - **utils** 工具包/公共函数/便捷方法
 
 TODO:
 - [ ] `http-req` 加入基础http认证设置`(*http.Request).SetBasicAuth()`
+- [ ] `http-req` 假如 context 上下文支持
+- [ ] `http-req` 结构体方法修改，headers,bodys等不再请求时传入而是链式调用过程中添加，例如 SetHeaders(), SetQueryParams(), SetBodyParamsByMap() 等
 
 
 
