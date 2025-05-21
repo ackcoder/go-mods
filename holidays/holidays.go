@@ -94,7 +94,6 @@ func (w *Worker) PickPolicyDocumentUrl() (policyUrl string, err error) {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("接口数据解析异常、或无有效数据: %v", r)
 		}
-		return
 	}()
 
 	var result struct {
